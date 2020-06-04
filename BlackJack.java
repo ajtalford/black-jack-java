@@ -30,6 +30,7 @@ public class BlackJack {
                 System.out.println("You can't bet more than you have.");
                 break;
             }
+    
             //Asks the player how much of their money they would like to bet. Breaks loop if they attempt to bet more than they have.
 
             boolean endRound = false;
@@ -38,11 +39,38 @@ public class BlackJack {
             playerDeck.draw(playingDeck);
             playerDeck.draw(playingDeck);
             //Gives player starting hand
+            
+            //experimental code for split functionality begins
+            /*
+            if(playerDeck.deckSize() < 3 && playerDeck.getCard(0).getValue() == playerDeck.getCard(1).getValue()){
+                //Verifies playerDeck is starting hand and that it contains two of the same value
+                System.out.println("Your hand:");
+                System.out.println(playerDeck.toString());
+                System.out.println("Would you like to split? (1)Yes or (2)No");
+                int splitResponse = userInput.nextInt();
+                if(splitResponse == 1){
+                    split();
+                } 
+                //if player chooses to split, runs the split method
+            }
+
+            split(){
+                Deck playerDeck2 = new Deck();
+                playerDeck2.draw(playerDeck);
+                //creates new hand for player, new hand takes a card from the original hand
+
+                playerDeck.draw(playingDeck);
+                playerDeck2.draw(playingDeck);
+                //both hands are dealt a card from the main deck, bringing both to a starting hand of two
+                Double playerBet2 = playerBet;
+            }
+            */
+            //experimental code for split functionality ends
+            
 
             dealerDeck.draw(playingDeck);
             dealerDeck.draw(playingDeck);
-            //Gives dealer starting hand
-
+            
             while(true){
                 System.out.println("Your hand:");
                 System.out.println(playerDeck.toString());
@@ -120,5 +148,4 @@ public class BlackJack {
 
         System.out.println("You're bankrupt!");
     }
-    
 }
