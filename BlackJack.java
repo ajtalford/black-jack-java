@@ -50,7 +50,7 @@ public class BlackJack {
             
             if(response == 3){
                 //code for split
-                if(playerDeck.getCard(0).getValue() == playerDeck.getCard(1).getValue()){
+                if(playerDeck.getCard(0).cardValue() == playerDeck.getCard(1).cardValue()){
                     Deck playerDeck2 = new Deck();
                     playerDeck2.addCard(playerDeck.getCard(1));
                     playerDeck.removeCard(1);

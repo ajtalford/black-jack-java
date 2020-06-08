@@ -1,3 +1,4 @@
+package blackJackSprint;
 import java.util.Scanner;
 public class Player {
     private Deck playingDeck,  dealerDeck,  playerDeck;
@@ -16,18 +17,30 @@ public class Player {
         if (response == 1){
             Scanner userInput = new Scanner(System.in);
             int doubleDown =0;
-            // check if double down is an option
-            if((playerDeck.cardsValue() >= 9 && playerDeck.cardsValue() <= 11 ) && (playerBet * 2 <= playerMoney)){
-                System.out.println("Would you like to double down your bet? (Enter 1 for 'yes' or 2 for 'no')");
-                doubleDown = userInput.nextInt();
-                if(doubleDown == 1){
-                    this.playerBet = this.playerBet * 2 ;
+            while(true){
+                // check if double down is an option
+                if((playerDeck.cardsValue() >= 9 && playerDeck.cardsValue() <= 11 ) && (playerBet * 2 <= playerMoney)){
+                    System.out.println("Would you like to double down your bet? (Enter 1 for 'yes' or 2 for 'no')");
+                    doubleDown = userInput.nextInt();
+                    if(doubleDown == 1){
+                        this.playerBet = this.playerBet * 2 ;
+                    }
+                } 
+                
+                // hit
+                playerDeck.draw(playingDeck);
+                System.out.println("You draw a: " + playerDeck.getCard(playerDeck.deckSize()-1).toString());
+                if(playerDeck.cardsValue() < 21 && doubleDown == 0){
+                    System.out.println("Your hand is valued at " + playerDeck.cardsValue() + " points.");
+                    System.out.println("Would you like to (1)Hit or (2)Stand?");
+                    if (userInput.nextInt() != 1){
+                        break;
+                    }
                 }
-            } 
-            
-            // hit
-            playerDeck.draw(playingDeck);
-            System.out.println("You draw a: " + playerDeck.getCard(playerDeck.deckSize()-1).toString());
+                else{
+                    break;
+                }
+            }
             //userInput.close(); 
         }
       
