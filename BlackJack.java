@@ -4,148 +4,94 @@ import java.util.Scanner;
 public class BlackJack {
 
     public static void main(String[] args) {
-        
         System.out.println("Welcome to Blackjack");
 
+        //creates the main deck
         Deck playingDeck = new Deck();
         playingDeck.createFullDeck();
         playingDeck.shuffle();
-        //creates the main deck
 
+        //creates hands for the player and dealer
         Deck playerDeck = new Deck();
         Deck dealerDeck = new Deck();
-        //creates hands for the player and dealer
 
-        //System.out.println(playingDeck);
-
-        double playerMoney = 200.00;
         //sets the starting value for the player's total gambling money
+        double playerMoney = 200.00;
 
         Scanner userInput = new Scanner(System.in);
-
         while(playerMoney > 0){
-            System.out.println("You have $" + playerMoney + ", how much will you bet?");
-            double playerBet = userInput.nextDouble();
-            if(playerBet > playerMoney){
-                System.out.println("You can't bet more than you have.");
-                break;
+            // initial bet
+            double playerBet = 5.00;
+            System.out.println("You have $" + playerMoney + " with $5 initial bet. Would you like to increase your bet by $5? Enter 1 for yes and 2 for no");
+            if(userInput.nextInt() == 1){
+                if (playerMoney >= 10){
+                    playerBet = playerBet + 5;
+                }
+                else {
+                    System.out.println("You don't have enough balance to increment your bet.");
+                }
             }
-    
-            //Asks the player how much of their money they would like to bet. Breaks loop if they attempt to bet more than they have.
 
-            boolean endRound = false;
-            //keeps the game going unless another method causes it to end
-
-            playerDeck.draw(playingDeck);
-            playerDeck.draw(playingDeck);
             //Gives player starting hand
-            
-            //experimental code for split functionality begins
-            /*
-            if(playerDeck.deckSize() < 3 && playerDeck.getCard(0).getValue() == playerDeck.getCard(1).getValue()){
-                //Verifies playerDeck is starting hand and that it contains two of the same value
-                System.out.println("Your hand:");
-                System.out.println(playerDeck.toString());
-                System.out.println("Would you like to split? (1)Yes or (2)No");
-                int splitResponse = userInput.nextInt();
-                if(splitResponse == 1){
-                    split();
-                } 
-                //if player chooses to split, runs the split method
-            }
+            playerDeck.draw(playingDeck);
+            playerDeck.draw(playingDeck);
 
-            split(){
-                Deck playerDeck2 = new Deck();
-                playerDeck2.draw(playerDeck);
-                //creates new hand for player, new hand takes a card from the original hand
-
-                playerDeck.draw(playingDeck);
-                playerDeck2.draw(playingDeck);
-                //both hands are dealt a card from the main deck, bringing both to a starting hand of two
-                Double playerBet2 = playerBet;
-            }
-            */
-            //experimental code for split functionality ends
-            
-
+            //Gives dealer starting hand
             dealerDeck.draw(playingDeck);
             dealerDeck.draw(playingDeck);
+
+            System.out.println("Your hand:");
+            System.out.println(playerDeck.toString());
+            System.out.println("Your hand is valued at " + playerDeck.cardsValue() + " points.");
+            System.out.println("Dealer Hand: " + dealerDeck.getCard(0).toString() + " and [hidden]");
             
-            while(true){
-                System.out.println("Your hand:");
-                System.out.println(playerDeck.toString());
-                System.out.println("Your hand is valued at " + playerDeck.cardsValue() + " points.");
-
-                System.out.println("Dealer Hand: " + dealerDeck.getCard(0).toString() + " and [hidden]");
-
-                System.out.println("Would you like to (1)Hit or (2)Stand?");
-                int response = userInput.nextInt();
-
-                if(response == 1){
-                    playerDeck.draw(playingDeck);
-                    System.out.println("You draw a: " + playerDeck.getCard(playerDeck.deckSize()-1).toString());
+            System.out.println("Would you like to (1)Hit or (2)Stand? or split(3)");
+            int response = userInput.nextInt();
+            
+            if(response == 3){
+                //code for split
+                if(playerDeck.getCard(0).getValue() == playerDeck.getCard(1).getValue()){
+                    Deck playerDeck2 = new Deck();
+                    playerDeck2.addCard(playerDeck.getCard(1));
+                    playerDeck.removeCard(1);
                     
-                    if(playerDeck.cardsValue() > 21){
-                        System.out.println("BUST! Your hand is worth: " + playerDeck.cardsValue());
-                        playerMoney -= playerBet;
-                        endRound = true;
-                        break;
-                    }
-                    //Bust if over 21
+                    playerDeck.draw(playingDeck);
+                    playerDeck2.draw(playingDeck);
+                    
+                    System.out.println("------hand1------");
+                    System.out.println(playerDeck.toString());
+                    System.out.println("Your hand is valued at " + playerDeck.cardsValue() + " points.");
+                    System.out.println("Would you like to (1)Hit or (2)Stand?");
+                    response = userInput.nextInt();
+                    Player playGame = new Player(playingDeck, dealerDeck, playerDeck, playerMoney, playerBet);
+                    playerMoney = playGame.playTime(response);
+                
+                    System.out.println("-----hand2------");
+                    System.out.println(playerDeck2.toString());
+                    System.out.println("Your hand is valued at " + playerDeck2.cardsValue() + " points.");
+                    System.out.println("Would you like to (1)Hit or (2)Stand?");
+                    response = userInput.nextInt();
+                    Player playGame2 = new Player(playingDeck, dealerDeck, playerDeck2, playerMoney, playerBet);
+                    playerMoney = playGame2.playTime(response);
+                    playerDeck2.moveAllToDeck(playingDeck);
                 }
-
-                if(response == 2){
-                    break;
-                }
+                else {
+                    System.out.println("Split is not valid.");
+                    System.out.println("Would you like to (1)Hit or (2)Stand?");
+                    response = userInput.nextInt();
+                }   
             }
-            //Primary game loop. Allows player to choose whether they want to hit or stand. Displays the hand and value to the player.
-
-            System.out.println("Dealer Cards: " + dealerDeck.toString());
-            if((dealerDeck.cardsValue() > playerDeck.cardsValue()) && endRound == false){
-                System.out.println("Dealer wins");
-                playerMoney -= playerBet;
-                endRound = true;
+            if (response == 1 || response == 2){
+                Player playGame = new Player(playingDeck, dealerDeck, playerDeck, playerMoney, playerBet);
+                playerMoney = playGame.playTime(response);
             }
-            //Dealer wins if the value of their hand is greater than the player's
-
-            while((dealerDeck.cardsValue() < 17) && endRound == false) {
-                dealerDeck.draw(playingDeck);
-                System.out.println("Dealer draws: " + dealerDeck.getCard(dealerDeck.deckSize()-1).toString());
-            }
-            System.out.println("Dealer's hand is valued at: " + dealerDeck.cardsValue());
-            //dealer only draws if their hand value is less than 16. Also draws the dealer a card and displays their hand value.
-
-            if((dealerDeck.cardsValue() > 21) && endRound == false){
-                System.out.println("Dealer BUSTS! You win!");
-                playerMoney += playerBet;
-                endRound = true;
-            }
-            //If the dealer's value goes over 21 they bust.
-
-
-            if((playerDeck.cardsValue() == dealerDeck.cardsValue()) && endRound == false) {
-                System.out.println("PUSH. You tied with the dealer.");
-                endRound = true;
-            }
-            //Tie condition
-
-            if((playerDeck.cardsValue() > dealerDeck.cardsValue()) && endRound == false){
-                System.out.println("You win the hand!");
-                playerMoney += playerBet;
-                endRound = true;
-            } else if(endRound == false){
-                System.out.println("You lose the hand.");
-                playerMoney -= playerBet;
-                endRound = true;
-            }
-            //If player's hand value > dealer's they win the hand. Otherwise, they lose.
 
             playerDeck.moveAllToDeck(playingDeck);
             dealerDeck.moveAllToDeck(playingDeck);
+
             System.out.println("End of hand.");
-
         }
-
         System.out.println("You're bankrupt!");
+        userInput.close(); 
     }
 }
